@@ -38,7 +38,7 @@
 
         //start listening for a catch message (One and only one)
         port.onMessage.addListener(function (msg, sendingPort) {
-            if (message.data.type == 'catched') {
+            if (message.type == 'catched') {
 
                 //place what was cached into "data-latest-catched-content" of "to" and dispatch CatchedContentReceived event
                 var catchInfo = message.data.catchInfo;
