@@ -37,7 +37,7 @@
         var port = chrome.runtime.connect(extensionId, { name: portName });
 
         //start listening for a catch message (One and only one)
-        port.onMessageExternal.addListener(function (msg, sendingPort) {
+        port.onMessage.addListener(function (msg, sendingPort) {
             if (message.data.type == 'catched') {
 
                 //place what was cached into "data-latest-catched-content" of "to" and dispatch CatchedContentReceived event
