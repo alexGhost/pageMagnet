@@ -36,15 +36,21 @@
         // Start a long-running conversation:
         var port = chrome.runtime.connect(extensionId, { name: portName });
 
-
-        port.postMessage({
+        chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+          
+          port.postMessage({
             type: "catch",
             catchInfo: {
                 what: what,
                 where: where,
-                to: to.id
+                to: to.id,
+                tab: tabs[0].id
             }
+          });
+          
         });
+        
+        
 
     }
 
