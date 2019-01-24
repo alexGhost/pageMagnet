@@ -36,35 +36,6 @@
         // Start a long-running conversation:
         var port = chrome.runtime.connect(extensionId, { name: portName });
 
-        //start listening for a catch message (One and only one)
-        port.onMessage.addListener(function (message, sendingPort) {
-            if (message.type == 'catched') {
-
-                //place what was cached into "data-latest-catched-content" of "to" and dispatch CatchedContentReceived event
-                var catchInfo = message.data.catchInfo;
-                var catchedItem = message.data.catchedItem;
-                var host = document.getElementById(catchInfo.to);
-                if (host) {
-                    host.setAttribute("data-latest-catched-content", JSON.stringify(catchedItem));
-                    if (callback)
-                        try{
-                            callback(catchedItem, catchInfo);
-                        }
-                        catch (error) {
-                            console.log("The callback function for catching threw the error following. The catchInfo was: " + JSON.stringify(catchInfo) + '\r\n' + "The catchedItem was: " + JSON.stringify(catchedItem) + '\r\n' + "The error was: " + error);
-                        }
-                    var event = new Event('CatchedContentReceived', { detail: {catchedItem : catchedItem, catchInfo : catchInfo} });
-                    host.dispatchEvent(event);
-                }
-
-                //acknowledge and shut down the port
-                port.postMessage({
-                    ack: "ok"
-                });
-
-                port.disconnect();
-            };
-        });
 
         port.postMessage({
             type: "catch",
