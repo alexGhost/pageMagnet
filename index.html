@@ -50,9 +50,10 @@
     }
 
      document.getElementById("myImg").addEventListener("CatchedContentReceived", function(e) { 
-       alert('Catched something') 
-       console.log("event object");
-       console.log(e);
+       var myImg = document.getElementById("myImg");
+        var info = JSON.parse(myImg.getAttribute("data-latest-catched-content"));
+        if (info.catchedItem.type === "Image")
+          myImg.src = info.catchedItem.src;
      });
      $(document).ready(function () {
         sendCacthRequest("Image", "https://cnn.com", $("#myImg").get(0), null, (catchedItem, catchInfo) => { alert(JSON.stringify(catchedItem)) });
