@@ -49,7 +49,7 @@
 
     }
 
-     document.getElementById("myImg").addeventListener("CatchedContentReceived", function(e) { alert(e.detail) });
+     document.getElementById("myImg").addEventListener("CatchedContentReceived", function(e) { alert(e.detail) });
      $(document).ready(function () {
         sendCacthRequest("Image", "https://cnn.com", $("#myImg").get(0), null, (catchedItem, catchInfo) => { alert(JSON.stringify(catchedItem)) });
     });
