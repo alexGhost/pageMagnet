@@ -51,7 +51,8 @@
 
      document.getElementById("myImg").addEventListener("CatchedContentReceived", function(e) { 
        alert('Catched something') 
-       var detail = e;
+       console.log("event object");
+       console.log(e);
      });
      $(document).ready(function () {
         sendCacthRequest("Image", "https://cnn.com", $("#myImg").get(0), null, (catchedItem, catchInfo) => { alert(JSON.stringify(catchedItem)) });
