@@ -52,7 +52,7 @@
      document.getElementById("myImg").addEventListener("CatchedContentReceived", function(e) { 
        var myImg = document.getElementById("myImg");
         var info = JSON.parse(myImg.getAttribute("data-latest-catched-content"));
-        if (info.catchedItem.type === "Image")
+        if (info.catchedItem.bmtype === "Image")
           myImg.src = info.catchedItem.src;
      });
      $(document).ready(function () {
