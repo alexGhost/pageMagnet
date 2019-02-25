@@ -77,13 +77,22 @@
     }
 
      document.getElementById("myImg").addEventListener("CatchedContentReceived", function(e) { 
-       var myImg = document.getElementById("myImg");
-        var info = JSON.parse(myImg.getAttribute("data-latest-catched-content"));
-        if (info.catchedItem.bmtype === "Image")
-          myImg.src = info.catchedItem.src;
+       var myCtn = document.getElementById("catchedCtn");
+        var info = JSON.parse(myCtn.getAttribute("data-latest-catched-content"));
+        if (info.catchedItem.bmtype === "YoutubeVideo"){
+        }
+        else
+        if (info.catchedItem.bmtype === "GoogleImage"){
+        }
+        else
+        if (info.catchedItem.bmtype === "Image"){
+        }
+        else
+        if (info.catchedItem.bmtype === "Link"){
+        }
      });
      $(document).ready(function () {
-        sendCacthRequest("YoutubeVideo,GoogleImage,Image,Link", "https://cnn.com", $("#catchedCtn").get(0), null);
+        sendCacthRequest("YoutubeVideo,GoogleImage,Image,Link", "https://cnn.com", document.getElementById("catchedCtn"), null);
     });
     
 </script>
