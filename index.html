@@ -80,7 +80,7 @@
        var myCtn = document.getElementById("catchedCtn");
         var info = JSON.parse(myCtn.getAttribute("data-latest-catched-content"));
         if (info.catchedItem.bmtype === "YoutubeVideo"){
-          var youtubeVideoCtn = document.getElementById("myGoogleImageCtn");
+          var youtubeVideoCtn = document.getElementById("myYoutubeVideoCtn");
           var youtubeVideo = new BMContent.YoutubeVideo();
           Object.assign(youtubeVideo, info.catchedItem);
           youtubeVideoCtn.appendChild(youtubeVideo.render());
@@ -94,14 +94,14 @@
         }
         else
         if (info.catchedItem.bmtype === "Image"){
-          var imageCtn = document.getElementById("imageCtn");
+          var imageCtn = document.getElementById("myImgCtn");
           var image = new BMContent.Image();
           Object.assign(image, info.catchedItem);
           imageCtn.appendChild(image.render());
         }
         else
         if (info.catchedItem.bmtype === "Link"){
-          var linkCtn = document.getElementById("linkCtn");
+          var linkCtn = document.getElementById("myLinkCtn");
           var link = new BMContent.Link();
           Object.assign(link, info.catchedItem);
           linkCtn.appendChild(link.render());
