@@ -32,6 +32,7 @@
     <br/>
     <br/>
     <img id="myImg" src="https://www.21co.com/~/media/Images/3 List View Images/21C-MedSpecialties-Thumb-492x320.ashx?mw=430" />
+    <div id="catchedCtn"></div>
   
 
 <div id="item">
@@ -46,7 +47,7 @@
 <script>
    
 
-    function sendCacthRequest(what, where, to, portName, callback) {
+    function sendCacthRequest(what, where, to, portName) {
         if (!to)
             throw Error("Argument 'to' is required");
 
@@ -82,7 +83,7 @@
           myImg.src = info.catchedItem.src;
      });
      $(document).ready(function () {
-        sendCacthRequest("YoutubeVideo", "https://cnn.com", $("#myImg").get(0), null, (catchedItem, catchInfo) => { alert(JSON.stringify(catchedItem)) });
+        sendCacthRequest("YoutubeVideo,Video,Audio,GoogleImage,Image,Link", "https://cnn.com", $("#catchedCtn").get(0), null);
     });
     
 </script>
