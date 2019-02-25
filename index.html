@@ -80,22 +80,441 @@
        var myCtn = document.getElementById("catchedCtn");
         var info = JSON.parse(myCtn.getAttribute("data-latest-catched-content"));
         if (info.catchedItem.bmtype === "YoutubeVideo"){
+          var youtubeVideoCtn = document.getElementById("myGoogleImageCtn");
+          var youtubeVideo = new BMContent.YoutubeVideo();
+          Object.assign(youtubeVideo, info.catchedItem);
+          youtubeVideoCtn.appendChild(youtubeVideo.render());
         }
         else
         if (info.catchedItem.bmtype === "GoogleImage"){
+          var googleImageCtn = document.getElementById("myGoogleImageCtn");
+          var googleImage = new BMContent.GoogleImage();
+          Object.assign(googleImage, info.catchedItem);
+          googleImageCtn.appendChild(googleImage.render());
         }
         else
         if (info.catchedItem.bmtype === "Image"){
+          var imageCtn = document.getElementById("myImageCtn");
+          var image = new BMContent.Image();
+          Object.assign(image, info.catchedItem);
+          imageCtn.appendChild(image.render());
         }
         else
         if (info.catchedItem.bmtype === "Link"){
+          var linkCtn = document.getElementById("linkCtn");
+          var link = new BMContent.Link();
+          Object.assign(link, info.catchedItem);
+          linkCtn.appendChild(link.render());
         }
      });
      $(document).ready(function () {
         sendCacthRequest("YoutubeVideo,GoogleImage,Image,Link", "https://cnn.com", document.getElementById("catchedCtn"), null);
     });
+  
+  
+    var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var BMContent;
+(function (BMContent) {
+    /****************************** Infrastructure ***************************************************** */
+    /**
+     * Dictionary where all content types are to be registered
+     */
+    BMContent.ContentTypes = {};
+    var Content = /** @class */ (function () {
+        function Content() {
+            /*The page where the content is parsed or catched from*/
+            this.page = document.URL;
+            /*The page where the content originally resides, defaults to the page where it is catched from*/
+            this.reference = document.URL;
+            /* Indicates whether or not the Content is in a valid state that allows for a successful call
+            to the render function */
+            this.isValid = false;
+        }
+        /* Parses an element and if it is what is expected to be valid, returns a minimal representation
+       of the parsed element to be serialized to Json format. If invalid, returns false. */
+        Content.prototype.parse = function (it) {
+            return this.parseCore(it);
+        };
+        /* If the Content is in a valid state, return an Html element that can be used to
+         visualize the content; otherwise returns null. */
+        Content.prototype.render = function () {
+            if (this.isValid)
+                return this.renderCore();
+            else
+                return null;
+        };
+        return Content;
+    }());
+    ///*A minimal representation of a catched content to be serialized into Json */
+    //class CatchResult {
+    //    bmtype: string;
+    //    page: string = document.URL;
+    //    reference: string = document.URL;
+    //    constructor(bmcontent: Content, reference: string = null) {
+    //        this.bmtype = bmcontent.bmtype;
+    //        this.reference = reference || this.reference;
+    //    }
+    //}
+    //--------------------------------- Helpers ---------------------------------------------------
+    function isHidden(el) {
+        var style = window.getComputedStyle(el);
+        return ((style.display === 'none') || (style.visibility === 'hidden'));
+    }
+    function getParameterByName(name, url) {
+        if (!url)
+            url = window.location.href;
+        name = name.replace(/[\[\]]/g, '\\$&');
+        var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'), results = regex.exec(url);
+        if (!results)
+            return null;
+        if (!results[2])
+            return '';
+        return decodeURIComponent(results[2].replace(/\+/g, ' '));
+    }
+    function decodeHTML(html) {
+        var txt = document.createElement('textarea');
+        txt.innerHTML = html;
+        return txt.value;
+    }
+    ;
+    function dualDecode(x) {
+        return decodeURIComponent(decodeHTML(x));
+    }
+    /*************************************************************************************************** */
+    /**************************** Image ************************* */
+    var Image = /** @class */ (function (_super) {
+        __extends(Image, _super);
+        function Image() {
+            var _this = _super.call(this) || this;
+            //public properties
+            _this.src = null;
+            _this.bmtype = "Image";
+            return _this;
+        }
+        //private properties
+        //parseCore(it: HTMLImageElement): CatchResult {
+        Image.prototype.parseCore = function (it) {
+            if (it.tagName === "IMG") {
+                //making the object ready for rendering
+                this.src = it.src;
+                this.isValid = true; //this means that the object is ready for rendering
+                //let toRet = new CatchedImage(this);
+                //return toRet;
+                return this;
+            }
+            else
+                return null;
+        };
+        Image.prototype.renderCore = function () {
+            var toRet = new HTMLImageElement();
+            toRet.src = this.src;
+            return toRet;
+        };
+        return Image;
+    }(Content));
+    BMContent.Image = Image;
+    //Registering the content type
+    BMContent.ContentTypes["Image"] = Image;
+    //export class CatchedImage extends CatchResult {
+    //    src: string;
+    //    constructor(image: Image) {
+    //        super(image);
+    //        this.src = image.src;
+    //    }
+    //}
+    /********************************************************** */
+    /**************************** Media (Helper) ************************* */
+    var Media = /** @class */ (function (_super) {
+        __extends(Media, _super);
+        function Media() {
+            var _this = _super.call(this) || this;
+            _this.srcs = new Array();
+            return _this;
+        }
+        Media.prototype.parseCore = function (it) {
+            if (it.tagName === "AUDIO" || it.tagName === "VIDEO") {
+                var innersources = it.getElementsByTagName("SOURCE");
+                if (it.src) {
+                    this._addSourceElement(it.src);
+                    this.src = it.src;
+                }
+                for (var i = 0; i < innersources.length; i++)
+                    if (innersources[i].src && this.srcs.indexOf(innersources[i].src) == -1)
+                        this._addSourceElement(innersources[i].src);
+                return true;
+            }
+            else
+                return false;
+        };
+        Media.prototype._addSourceElement = function (sourceStr) {
+            this.srcs.push(sourceStr);
+            var s = new HTMLSourceElement();
+            s.src = sourceStr;
+            this.appendChild(s);
+        };
+        return Media;
+    }(HTMLMediaElement));
+    /********************************************************** */
+    /**************************** Audio ************************* */
+    var Audio = /** @class */ (function (_super) {
+        __extends(Audio, _super);
+        function Audio() {
+            var _this = _super.call(this) || this;
+            //public properties
+            _this.srcs = new Array();
+            //private properties
+            _this.media = new Media();
+            _this.bmtype = "Audio";
+            return _this;
+        }
+        //parseCore(it: HTMLAudioElement): CatchedAudio {
+        Audio.prototype.parseCore = function (it) {
+            var res = this.media.parseCore(it);
+            if (!res)
+                return null;
+            else if (it.tagName === "AUDIO") {
+                this.srcs = this.media.srcs;
+                this.isValid = true;
+                //let toRet = new CatchedAudio(this);
+                //return toRet;
+                return this;
+            }
+            else
+                return null;
+        };
+        Audio.prototype.renderCore = function () {
+            var toRet = new HTMLAudioElement();
+            toRet.src = this.media.src;
+            toRet.innerHTML = this.media.innerHTML;
+            return toRet;
+        };
+        return Audio;
+    }(Content));
+    BMContent.Audio = Audio;
+    //export class CatchedAudio extends CatchResult {
+    //    srcs: Array<string>;
+    //    constructor(audio: Audio) {
+    //        super(audio);
+    //        this.srcs = audio.srcs;
+    //    }
+    //}
+    //Registering the content type
+    BMContent.ContentTypes["Audio"] = Audio;
+    /********************************************************** */
+    /**************************** Video ************************* */
+    var Video = /** @class */ (function (_super) {
+        __extends(Video, _super);
+        function Video() {
+            var _this = _super.call(this) || this;
+            //public properties
+            _this.srcs = new Array();
+            //private properties
+            _this.media = new Media();
+            _this.bmtype = "Video";
+            return _this;
+        }
+        //parseCore(it: HTMLVideoElement): CatchedVideo {
+        Video.prototype.parseCore = function (it) {
+            var res = this.media.parseCore(it);
+            if (!res)
+                return null;
+            else if (it.tagName === "VIDEO") {
+                this.srcs = this.media.srcs;
+                this.isValid = true;
+                //let toRet = new CatchedVideo(this);
+                //return toRet;
+                return this;
+            }
+            else
+                return null;
+        };
+        Video.prototype.renderCore = function () {
+            var toRet = new HTMLVideoElement();
+            toRet.src = this.media.src;
+            toRet.innerHTML = this.media.innerHTML;
+            return toRet;
+        };
+        return Video;
+    }(Content));
+    BMContent.Video = Video;
+    //Registering the content type
+    BMContent.ContentTypes["Video"] = Video;
+    //export class CatchedVideo extends CatchResult {
+    //    srcs: Array<string>;
+    //    constructor(video: Video) {
+    //        super(video);
+    //        this.srcs = video.srcs;
+    //    }
+    //}
+    /********************************************************** */
+    /**************************** Link ************************* */
+    var Link = /** @class */ (function (_super) {
+        __extends(Link, _super);
+        function Link() {
+            var _this = _super.call(this) || this;
+            _this.bmtype = "Link";
+            return _this;
+        }
+        //parseCore(it: HTMLAnchorElement): CatchResult {
+        Link.prototype.parseCore = function (it) {
+            if (it.tagName === "A") {
+                this.href = it.href;
+                this.innerText = it.innerText;
+                this.isValid = true;
+                //let toRet = new CatchedLink(this);
+                //return toRet;
+                return this;
+            }
+            else
+                return null;
+        };
+        Link.prototype.renderCore = function () {
+            var toRet = new HTMLAnchorElement();
+            toRet.href = this.href;
+            toRet.innerText = this.innerText;
+            return toRet;
+        };
+        return Link;
+    }(Content));
+    BMContent.Link = Link;
+    //Registering the content type
+    BMContent.ContentTypes["Link"] = Link;
+    //export class CatchedLink extends CatchResult {
+    //    href: string;
+    //    innerText: string;
+    //    constructor(link: Link) {
+    //        super(link);
+    //        this.href = link.href;
+    //        this.innerText = link.innerText;
+    //    }
+    //}
+    /********************************************************** */
+    /**************************** Google Image ************************* */
+    var GoogleImage = /** @class */ (function (_super) {
+        __extends(GoogleImage, _super);
+        function GoogleImage() {
+            var _this = _super.call(this) || this;
+            _this.bmtype = "GoogleImage";
+            return _this;
+        }
+        //parseCore(it: HTMLAnchorElement): CatchResult {
+        GoogleImage.prototype.parseCore = function (it) {
+            if (document.URL.lastIndexOf("https://www.google.com") === 0 &&
+                it.tagName === "A" &&
+                it.matches(".rg_bx.rg_di.rg_el.ivg-i")) {
+                //top link (image)
+                var _links = it.getElementsByTagName("A");
+                if (_links.length === 0)
+                    return null;
+                var _link = (_links[0]);
+                var _url0 = _link.href.split("?imgUrl=")[1].split('"')[0];
+                this.src = decodeURIComponent(_url0);
+                //bottom link (title and site)
+                var link_ = it.querySelector("a.irc-nic.isr-rtc");
+                if (link_ !== null) {
+                    var url_ = link_.href.split("&amp;url=")[1];
+                    this.reference = dualDecode(url_);
+                    var title_ = link_.querySelector(".mVDMnf.nJGrxf");
+                    if (title_ !== null)
+                        this.title = title_.innerHTML;
+                    var site_ = link_.querySelector(".nJGrxf.FnqxG");
+                    if (site_ !== null)
+                        this.site = site_.innerHTML;
+                }
+                this.reference = link_.href;
+                this.isValid = true;
+                //let toRet = new CatchedGoogleImage(this);
+                //return toRet;
+                return this;
+            }
+            else
+                return null;
+        };
+        GoogleImage.prototype.renderCore = function () {
+            var toRet = new HTMLImageElement();
+            return toRet;
+        };
+        return GoogleImage;
+    }(Content));
+    BMContent.GoogleImage = GoogleImage;
+    //Registering the content type
+    BMContent.ContentTypes["GoogleImage"] = GoogleImage;
+    //export class CatchedGoogleImage extends CatchResult {
+    //    src: string;
+    //    title: string;
+    //    site: string;
+    //    constructor(gimg: GoogleImage) {
+    //        super(gimg);
+    //        this.reference = gimg.reference;
+    //        this.src = gimg.src;
+    //        this.title = gimg.title;
+    //        this.site = gimg.site;
+    //    }
+    //}
+    /********************************************************** */
+    /**************************** Youtube Video ************************* */
+    var YoutubeVideo = /** @class */ (function (_super) {
+        __extends(YoutubeVideo, _super);
+        function YoutubeVideo() {
+            var _this = _super.call(this) || this;
+            _this.bmtype = "YoutubeVideo";
+            return _this;
+        }
+        //parseCore(it: HTMLAnchorElement): CatchResult {
+        YoutubeVideo.prototype.parseCore = function (it) {
+            var base = "https://www.youtube.com/watch?v=";
+            if (it.tagName === "A" && it.href.lastIndexOf(base) === 0) {
+                this.href = it.href;
+                this._id = it.href.split(base)[1];
+                this.isValid = true;
+                //let toRet = new CatchedYoutubeVideo(this);
+                //return toRet;
+                return this;
+            }
+            else
+                return null;
+        };
+        YoutubeVideo.prototype.renderCore = function () {
+            var toRet = new HTMLIFrameElement();
+            toRet.src = "https://www.youtube.com/embed/" + this._id;
+            toRet.width = "560";
+            toRet.height = "315";
+            toRet.frameBorder = "0";
+            toRet.allow = "accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture";
+            toRet.allowFullscreen = true;
+            return toRet;
+        };
+        return YoutubeVideo;
+    }(Content));
+    BMContent.YoutubeVideo = YoutubeVideo;
+    //Registering the content type
+    BMContent.ContentTypes["YoutubeVideo"] = YoutubeVideo;
+    //export class CatchedYoutubeVideo extends CatchResult {
+    //    href: string;
+    //    constructor(yv: YoutubeVideo) {
+    //        super(yv);
+    //        this.href = yv.href;
+    //    }
+    //}
+    /********************************************************** */
+})(BMContent || (BMContent = {}));
+
     
 </script>
+
+
 
 
 
