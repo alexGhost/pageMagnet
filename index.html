@@ -76,7 +76,7 @@
 
     }
 
-     document.getElementById("myImg").addEventListener("CatchedContentReceived", function(e) { 
+     document.getElementById("catchedCtn").addEventListener("CatchedContentReceived", function(e) { 
        var myCtn = document.getElementById("catchedCtn");
         var info = JSON.parse(myCtn.getAttribute("data-latest-catched-content"));
         if (info.catchedItem.bmtype === "YoutubeVideo"){
