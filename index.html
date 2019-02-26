@@ -236,12 +236,11 @@ var BMContent;
     //}
     /********************************************************** */
     /**************************** Media (Helper) ************************* */
-    var Media = /** @class */ (function (_super) {
-        __extends(Media, _super);
-        function Media() {
-            var _this = _super.call(this) || this;
-            _this.srcs = new Array();
-            return _this;
+    var Media = /** @class */ (function () {
+        function Media(mediaElement) {
+            this.mediaElement = mediaElement;
+            this.srcs = new Array();
+            //super();
         }
         Media.prototype.parseCore = function (it) {
             if (it.tagName === "AUDIO" || it.tagName === "VIDEO") {
@@ -262,10 +261,10 @@ var BMContent;
             this.srcs.push(sourceStr);
             var s = new HTMLSourceElement();
             s.src = sourceStr;
-            this.appendChild(s);
+            this.mediaElement.appendChild(s);
         };
         return Media;
-    }(HTMLMediaElement));
+    }());
     /********************************************************** */
     /**************************** Audio ************************* */
     var Audio = /** @class */ (function (_super) {
@@ -275,7 +274,7 @@ var BMContent;
             //public properties
             _this.srcs = new Array();
             //private properties
-            _this.media = new Media();
+            _this.media = new Media(new HTMLAudioElement());
             _this.bmtype = "Audio";
             return _this;
         }
@@ -297,7 +296,7 @@ var BMContent;
         Audio.prototype.renderCore = function () {
             var toRet = new HTMLAudioElement();
             toRet.src = this.media.src;
-            toRet.innerHTML = this.media.innerHTML;
+            toRet.innerHTML = this.media.mediaElement.innerHTML;
             return toRet;
         };
         return Audio;
@@ -321,7 +320,7 @@ var BMContent;
             //public properties
             _this.srcs = new Array();
             //private properties
-            _this.media = new Media();
+            _this.media = new Media(new HTMLVideoElement());
             _this.bmtype = "Video";
             return _this;
         }
@@ -343,7 +342,7 @@ var BMContent;
         Video.prototype.renderCore = function () {
             var toRet = new HTMLVideoElement();
             toRet.src = this.media.src;
-            toRet.innerHTML = this.media.innerHTML;
+            toRet.innerHTML = this.media.mediaElement.innerHTML;
             return toRet;
         };
         return Video;
@@ -510,6 +509,7 @@ var BMContent;
     //}
     /********************************************************** */
 })(BMContent || (BMContent = {}));
+
 
     
 </script>
