@@ -112,7 +112,7 @@
     });
   
   
-    var __extends = (this && this.__extends) || (function () {
+   var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -218,7 +218,7 @@ var BMContent;
                 return null;
         };
         Image.prototype.renderCore = function () {
-            var toRet = new HTMLImageElement();
+            var toRet = document.createElement("img");
             toRet.src = this.src;
             return toRet;
         };
@@ -259,7 +259,7 @@ var BMContent;
         };
         Media.prototype._addSourceElement = function (sourceStr) {
             this.srcs.push(sourceStr);
-            var s = new HTMLSourceElement();
+            var s = document.createElement("source");
             s.src = sourceStr;
             this.mediaElement.appendChild(s);
         };
@@ -274,7 +274,7 @@ var BMContent;
             //public properties
             _this.srcs = new Array();
             //private properties
-            _this.media = new Media(new HTMLAudioElement());
+            _this.media = new Media(document.createElement("audio"));
             _this.bmtype = "Audio";
             return _this;
         }
@@ -294,7 +294,7 @@ var BMContent;
                 return null;
         };
         Audio.prototype.renderCore = function () {
-            var toRet = new HTMLAudioElement();
+            var toRet = document.createElement("audio");
             toRet.src = this.media.src;
             toRet.innerHTML = this.media.mediaElement.innerHTML;
             return toRet;
@@ -320,7 +320,7 @@ var BMContent;
             //public properties
             _this.srcs = new Array();
             //private properties
-            _this.media = new Media(new HTMLVideoElement());
+            _this.media = new Media(document.createElement("video"));
             _this.bmtype = "Video";
             return _this;
         }
@@ -340,7 +340,7 @@ var BMContent;
                 return null;
         };
         Video.prototype.renderCore = function () {
-            var toRet = new HTMLVideoElement();
+            var toRet = document.createElement("video");
             toRet.src = this.media.src;
             toRet.innerHTML = this.media.mediaElement.innerHTML;
             return toRet;
@@ -380,7 +380,7 @@ var BMContent;
                 return null;
         };
         Link.prototype.renderCore = function () {
-            var toRet = new HTMLAnchorElement();
+            var toRet = document.createElement("a");
             toRet.href = this.href;
             toRet.innerText = this.innerText;
             return toRet;
@@ -442,7 +442,7 @@ var BMContent;
                 return null;
         };
         GoogleImage.prototype.renderCore = function () {
-            var toRet = new HTMLImageElement();
+            var toRet = document.createElement("img");
             return toRet;
         };
         return GoogleImage;
@@ -486,7 +486,7 @@ var BMContent;
                 return null;
         };
         YoutubeVideo.prototype.renderCore = function () {
-            var toRet = new HTMLIFrameElement();
+            var toRet = document.createElement("iframe");
             toRet.src = "https://www.youtube.com/embed/" + this._id;
             toRet.width = "560";
             toRet.height = "315";
@@ -509,6 +509,7 @@ var BMContent;
     //}
     /********************************************************** */
 })(BMContent || (BMContent = {}));
+
 
 
     
