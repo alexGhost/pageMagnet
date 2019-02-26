@@ -83,6 +83,7 @@
           var youtubeVideoCtn = document.getElementById("myYoutubeVideoCtn");
           var youtubeVideo = new BMContent.YoutubeVideo();
           Object.assign(youtubeVideo, info.catchedItem);
+          youtubeVideoCtn.innerHtml = "";
           youtubeVideoCtn.appendChild(youtubeVideo.render());
         }
         else
@@ -90,6 +91,7 @@
           var googleImageCtn = document.getElementById("myGoogleImageCtn");
           var googleImage = new BMContent.GoogleImage();
           Object.assign(googleImage, info.catchedItem);
+          googleImageCtn.innerHtml = "";
           googleImageCtn.appendChild(googleImage.render());
         }
         else
@@ -97,6 +99,7 @@
           var imageCtn = document.getElementById("myImgCtn");
           var image = new BMContent.Image();
           Object.assign(image, info.catchedItem);
+          imageCtn.innerHtml = "";
           imageCtn.appendChild(image.render());
         }
         else
@@ -104,6 +107,7 @@
           var linkCtn = document.getElementById("myLinkCtn");
           var link = new BMContent.Link();
           Object.assign(link, info.catchedItem);
+          linkCtn.innerHtml = "";
           linkCtn.appendChild(link.render());
         }
      });
