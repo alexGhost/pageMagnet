@@ -415,15 +415,23 @@ var BMContent;
         //parseCore(it: HTMLAnchorElement): CatchResult {
         GoogleImage.prototype.parseCore = function (it) {
             if (document.URL.lastIndexOf("https://www.google.com") === 0 &&
-                it.tagName === "A" &&
+                it.tagName === "DIV" &&
                 it.matches(".rg_bx.rg_di.rg_el.ivg-i")) {
                 //top link (image)
                 var _links = it.getElementsByTagName("A");
-                if (_links.length === 0)
+                if (_links.length === 0) {
+                    console.log("_links.length === 0");
                     return null;
-                var _link = (_links[0]);
-                var _url0 = _link.href.split("?imgUrl=")[1].split('"')[0];
-                this.src = decodeURIComponent(_url0);
+                }
+                var _link = _links[0];
+                try {
+                    var _url0 = _link.href.split("?imgrefurl=")[1].split('"')[0];
+                    this.src = decodeURIComponent(_url0);
+                }
+                catch (error) {
+                    this.src = "COULDNT:::" + _link.href;
+                }
+                console.log("My Source1: " + this.src);
                 //bottom link (title and site)
                 var link_ = it.querySelector("a.irc-nic.isr-rtc");
                 if (link_ !== null) {
@@ -442,11 +450,25 @@ var BMContent;
                 //return toRet;
                 return this;
             }
-            else
+            else {
+                console.log("GoogleImage: not inside");
                 return null;
+            }
         };
         GoogleImage.prototype.renderCore = function () {
-            var toRet = document.createElement("img");
+            var toRet = document.createElement("div");
+            toRet.style.display = "inline-block";
+            var topdiv = document.createElement("div");
+            var bottomDiv = document.createElement("div");
+            var titleLink = document.createElement("a");
+            var image = document.createElement("img");
+            image.src = this.src;
+            titleLink.href = this.reference;
+            titleLink.innerText = this.title;
+            toRet.appendChild(topdiv);
+            toRet.appendChild(bottomDiv);
+            topdiv.appendChild(image);
+            bottomDiv.appendChild(titleLink);
             return toRet;
         };
         return GoogleImage;
@@ -513,6 +535,7 @@ var BMContent;
     //}
     /********************************************************** */
 })(BMContent || (BMContent = {}));
+
 
 
 
