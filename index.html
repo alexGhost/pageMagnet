@@ -386,7 +386,7 @@ var BMContent;
         Link.prototype.renderCore = function () {
             var toRet = document.createElement("a");
             toRet.href = this.href;
-            toRet.innerText = this.innerText;
+            toRet.innerText = this.innerText || this.href;
             return toRet;
         };
         return Link;
