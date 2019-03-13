@@ -246,8 +246,21 @@ var BMContent;
                 //return toRet;
                 return this;
             }
-            else
+            else {
+                //try to get background image if any
+                try {
+                    var style = it.currentStyle || window.getComputedStyle(it, false);
+                    if (style.backgroundImage) {
+                        this.src = style.backgroundImage.slice(4, -1).replace(/['"]/g, "");
+                        if (this.src) {
+                            this.isValid = true;
+                            return this;
+                        }
+                    }
+                }
+                catch (error) { }
                 return null;
+            }
         };
         Image.prototype.renderCore = function () {
             var toRet = document.createElement("img");
@@ -268,35 +281,34 @@ var BMContent;
     //}
     /********************************************************** */
     /**************************** Media (Helper) ************************* */
-    var Media = /** @class */ (function () {
-        function Media(mediaElement) {
-            this.mediaElement = mediaElement;
-            this.srcs = new Array();
-            //super();
-        }
-        Media.prototype.parseCore = function (it) {
-            if (it.tagName === "AUDIO" || it.tagName === "VIDEO") {
-                var innersources = it.getElementsByTagName("SOURCE");
-                if (it.src) {
-                    this._addSourceElement(it.src);
-                    this.src = it.src;
-                }
-                for (var i = 0; i < innersources.length; i++)
-                    if (innersources[i].src && this.srcs.indexOf(innersources[i].src) == -1)
-                        this._addSourceElement(innersources[i].src);
-                return true;
-            }
-            else
-                return false;
-        };
-        Media.prototype._addSourceElement = function (sourceStr) {
-            this.srcs.push(sourceStr);
-            var s = document.createElement("source");
-            s.src = sourceStr;
-            this.mediaElement.appendChild(s);
-        };
-        return Media;
-    }());
+    //class Media { //extends HTMLMediaElement {
+    //    srcs: Array<string> = new Array<string>();
+    //    src: string;
+    //    constructor(public mediaElement: HTMLMediaElement) {
+    //        //super();
+    //    }
+    //    parseCore(it: HTMLMediaElement): boolean {
+    //        if (it.tagName === "AUDIO" || it.tagName === "VIDEO") {
+    //            let innersources = <Array<HTMLSourceElement>><any>it.getElementsByTagName("SOURCE");
+    //            if (it.src) {
+    //                this._addSourceElement(it.src)
+    //                this.src = it.src;
+    //            }
+    //            for (var i = 0; i < innersources.length; i++)
+    //                if (innersources[i].src && this.srcs.indexOf(innersources[i].src) == -1)
+    //                    this._addSourceElement(innersources[i].src)
+    //            return true;
+    //        }
+    //        else
+    //            return false;
+    //    }
+    //    //private _addSourceElement(sourceStr: string) {
+    //    //    this.srcs.push(sourceStr)
+    //    //    let s = <HTMLSourceElement>document.createElement("source");
+    //    //    s.src = sourceStr;
+    //    //    this.mediaElement.appendChild(s);
+    //    //}
+    //}
     /********************************************************** */
     /**************************** Audio ************************* */
     var Audio = /** @class */ (function (_super) {
@@ -305,21 +317,22 @@ var BMContent;
             var _this = _super.call(this) || this;
             //public properties
             _this.srcs = new Array();
-            //private properties
-            _this.media = new Media(document.createElement("audio"));
             _this.bmtype = "Audio";
             return _this;
         }
         //parseCore(it: HTMLAudioElement): CatchedAudio {
         Audio.prototype.parseCore = function (it) {
-            var res = this.media.parseCore(it);
-            if (!res)
-                return null;
-            else if (it.tagName === "AUDIO") {
-                this.srcs = this.media.srcs;
-                this.isValid = true;
-                //let toRet = new CatchedAudio(this);
-                //return toRet;
+            if (it.tagName === "AUDIO") {
+                var innersources = it.getElementsByTagName("SOURCE");
+                if (it.src) {
+                    this.srcs.push(it.src);
+                }
+                if (innersources) {
+                    for (var i = 0; i < innersources.length; i++)
+                        if (innersources[i].src && this.srcs.indexOf(innersources[i].src) == -1)
+                            this.srcs.push(innersources[i].src);
+                }
+                this.isValid = this.srcs.length > 0;
                 return this;
             }
             else
@@ -327,8 +340,11 @@ var BMContent;
         };
         Audio.prototype.renderCore = function () {
             var toRet = document.createElement("audio");
-            toRet.src = this.media.src;
-            toRet.innerHTML = this.media.mediaElement.innerHTML;
+            for (var i = 0; i < this.srcs.length; i++) {
+                var s = document.createElement("source");
+                s.src = this.srcs[i];
+                toRet.appendChild(s);
+            }
             return toRet;
         };
         return Audio;
@@ -351,21 +367,22 @@ var BMContent;
             var _this = _super.call(this) || this;
             //public properties
             _this.srcs = new Array();
-            //private properties
-            _this.media = new Media(document.createElement("video"));
             _this.bmtype = "Video";
             return _this;
         }
         //parseCore(it: HTMLVideoElement): CatchedVideo {
         Video.prototype.parseCore = function (it) {
-            var res = this.media.parseCore(it);
-            if (!res)
-                return null;
-            else if (it.tagName === "VIDEO") {
-                this.srcs = this.media.srcs;
-                this.isValid = true;
-                //let toRet = new CatchedVideo(this);
-                //return toRet;
+            if (it.tagName === "VIDEO") {
+                var innersources = it.getElementsByTagName("SOURCE");
+                if (it.src) {
+                    this.srcs.push(it.src);
+                }
+                if (innersources) {
+                    for (var i = 0; i < innersources.length; i++)
+                        if (innersources[i].src && this.srcs.indexOf(innersources[i].src) == -1)
+                            this.srcs.push(innersources[i].src);
+                }
+                this.isValid = this.srcs.length > 0;
                 return this;
             }
             else
@@ -373,8 +390,11 @@ var BMContent;
         };
         Video.prototype.renderCore = function () {
             var toRet = document.createElement("video");
-            toRet.src = this.media.src;
-            toRet.innerHTML = this.media.mediaElement.innerHTML;
+            for (var i = 0; i < this.srcs.length; i++) {
+                var s = document.createElement("source");
+                s.src = this.srcs[i];
+                toRet.appendChild(s);
+            }
             return toRet;
         };
         return Video;
@@ -447,33 +467,63 @@ var BMContent;
                 it.matches(".rg_bx.rg_di.rg_el.ivg-i")) {
                 //top link (image)
                 var _links = it.getElementsByTagName("A");
-                if (_links.length === 0) {
+                if (_links.length < 2) {
                     console.log("_links.length === 0");
                     return null;
                 }
+                console.log("this many links: " + _links.length);
                 var _link = _links[0];
                 try {
-                    var _url0 = _link.href.split("?imgrefurl=")[1].split('"')[0];
+                    var _url0 = _link.href.split("?imgurl=")[1].split('"')[0].split("&imgrefurl=")[0];
                     this.src = decodeURIComponent(_url0);
                 }
                 catch (error) {
-                    this.src = "COULDNT:::" + _link.href;
+                    this.src = _link.href;
                 }
                 console.log("My Source1: " + this.src);
                 //bottom link (title and site)
-                var link_ = it.querySelector("a.irc-nic.isr-rtc");
+                var link_ = it.querySelector("a.irc-nic.isr-rtc"); //<HTMLAnchorElement>_links[1];  //
                 if (link_ !== null) {
-                    var url_ = link_.href.split("&amp;url=")[1];
-                    this.reference = dualDecode(url_);
-                    var title_ = link_.querySelector(".mVDMnf.nJGrxf");
-                    if (title_ !== null)
-                        this.title = title_.innerHTML;
-                    var site_ = link_.querySelector(".nJGrxf.FnqxG");
-                    if (site_ !== null)
-                        this.site = site_.innerHTML;
+                    try {
+                        var title_ = link_.querySelector(".mVDMnf.nJGrxf");
+                        if (title_ !== null)
+                            this.title = title_.innerHTML;
+                    }
+                    catch (error) { }
+                    try {
+                        var site_ = link_.querySelector(".nJGrxf.FnqxG");
+                        if (site_ !== null)
+                            this.site = site_.innerHTML;
+                    }
+                    catch (error) { }
                 }
-                this.reference = link_.href;
-                this.isValid = true;
+                try {
+                    var _imgs = it.getElementsByTagName("IMG");
+                    var dataSrc = null;
+                    for (var i = 0; i < _imgs.length; i++) {
+                        dataSrc = _imgs[i].src;
+                        if (dataSrc && dataSrc.substring(0, 4) === 'data') {
+                            this.data = dataSrc;
+                            break;
+                        }
+                    }
+                }
+                catch (error) {
+                }
+                var meta = null;
+                try {
+                    meta = JSON.parse(it.querySelector(".rg_meta").innerHTML);
+                }
+                catch (error) { }
+                if (meta) {
+                    this.src = this.src || meta.ou;
+                    this.site = this.site || meta.isu || meta.rh;
+                    this.title = this.title || meta.pt;
+                    this.reference = meta.ru;
+                }
+                if (this.src === null)
+                    return;
+                this.isValid = this.data !== null;
                 //let toRet = new CatchedGoogleImage(this);
                 //return toRet;
                 return this;
@@ -491,6 +541,7 @@ var BMContent;
             var titleLink = document.createElement("a");
             var image = document.createElement("img");
             image.src = this.src;
+            image.onerror = function () { image.src = this.data; };
             titleLink.href = this.reference;
             titleLink.innerText = this.title;
             toRet.appendChild(topdiv);
@@ -563,6 +614,7 @@ var BMContent;
     //}
     /********************************************************** */
 })(BMContent || (BMContent = {}));
+
 
 
 
