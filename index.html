@@ -30,6 +30,17 @@
       </div>
     </div>
     <br/>
+     <div>
+      <div><label>Video</label></div>
+      <div id="myVideoCtn">
+      </div>
+    </div>
+     <div>
+      <div><label>Audio</label></div>
+      <div id="myAudioCtn">
+      </div>
+    </div>
+    <br/>
     <br/>
     <img id="myImg" src="https://www.21co.com/~/media/Images/3 List View Images/21C-MedSpecialties-Thumb-492x320.ashx?mw=430" />
     <div id="catchedCtn"></div>
@@ -79,12 +90,29 @@
      document.getElementById("catchedCtn").addEventListener("CatchedContentReceived", function(e) { 
        var myCtn = document.getElementById("catchedCtn");
         var info = JSON.parse(myCtn.getAttribute("data-latest-catched-content"));
+       
         if (info.catchedItem.bmtype === "YoutubeVideo"){
           var youtubeVideoCtn = document.getElementById("myYoutubeVideoCtn");
           var youtubeVideo = new BMContent.YoutubeVideo();
           Object.assign(youtubeVideo, info.catchedItem);
           youtubeVideoCtn.innerHtml = "";
           youtubeVideoCtn.appendChild(youtubeVideo.render());
+        }
+        else
+        if (info.catchedItem.bmtype === "Video"){
+          var videoCtn = document.getElementById("myVideoCtn");
+          var video = new BMContent.Video();
+          Object.assign(video, info.catchedItem);
+          videoCtn.innerHtml = "";
+          videoCtn.appendChild(video.render());
+        }
+        else
+        if (info.catchedItem.bmtype === "Audio"){
+          var audioCtn = document.getElementById("myAudioCtn");
+          var audio = new BMContent.Audio();
+          Object.assign(audio, info.catchedItem);
+          audioCtn.innerHtml = "";
+          audioCtn.appendChild(audio.render());
         }
         else
         if (info.catchedItem.bmtype === "GoogleImage"){
