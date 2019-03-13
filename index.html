@@ -340,6 +340,7 @@ var BMContent;
         };
         Audio.prototype.renderCore = function () {
             var toRet = document.createElement("audio");
+            toRet.controls = true;
             for (var i = 0; i < this.srcs.length; i++) {
                 var s = document.createElement("source");
                 s.src = this.srcs[i];
@@ -390,6 +391,7 @@ var BMContent;
         };
         Video.prototype.renderCore = function () {
             var toRet = document.createElement("video");
+            toRet.controls = true;
             for (var i = 0; i < this.srcs.length; i++) {
                 var s = document.createElement("source");
                 s.src = this.srcs[i];
@@ -614,6 +616,7 @@ var BMContent;
     //}
     /********************************************************** */
 })(BMContent || (BMContent = {}));
+
 
 
 
