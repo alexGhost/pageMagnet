@@ -265,6 +265,7 @@ var BMContent;
         Image.prototype.renderCore = function () {
             var toRet = document.createElement("img");
             toRet.src = this.src;
+            toRet.style.width = '100%';
             return toRet;
         };
         return Image;
@@ -341,6 +342,7 @@ var BMContent;
         Audio.prototype.renderCore = function () {
             var toRet = document.createElement("audio");
             toRet.controls = true;
+            toRet.style.width = '100%';
             for (var i = 0; i < this.srcs.length; i++) {
                 var s = document.createElement("source");
                 s.src = this.srcs[i];
@@ -392,6 +394,7 @@ var BMContent;
         Video.prototype.renderCore = function () {
             var toRet = document.createElement("video");
             toRet.controls = true;
+            toRet.style.width = '100%';
             for (var i = 0; i < this.srcs.length; i++) {
                 var s = document.createElement("source");
                 s.src = this.srcs[i];
@@ -543,6 +546,7 @@ var BMContent;
             var titleLink = document.createElement("a");
             var image = document.createElement("img");
             image.src = this.src;
+            image.style.width = '100%';
             image.onerror = function () { image.src = this.data; };
             titleLink.href = this.reference;
             titleLink.innerText = this.title;
@@ -616,6 +620,7 @@ var BMContent;
     //}
     /********************************************************** */
 })(BMContent || (BMContent = {}));
+
 
 
 
