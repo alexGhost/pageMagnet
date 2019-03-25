@@ -593,6 +593,10 @@ var BMContent;
                 //return toRet;
                 return this;
             }
+            else if (document.URL.lastIndexOf(base) === 0 && it.tagName === "VIDEO" && it.classList.contains('video-stream') && it.classList.contains('html5-main-video')) {
+                this.href = document.URL;
+                this._id = document.URL.split(base)[1];
+            }
             else
                 return null;
         };
@@ -601,7 +605,7 @@ var BMContent;
             toRet.src = "https://www.youtube.com/embed/" + this._id;
             toRet.width = "560";
             toRet.height = "315";
-            toRet.style.maxWidth = '100%'
+            toRet.style.maxWidth = '100%';
             toRet.frameBorder = "0";
             toRet.allow = "accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture";
             toRet.allowFullscreen = true;
