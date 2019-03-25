@@ -596,6 +596,8 @@ var BMContent;
             else if (document.URL.lastIndexOf(base) === 0 && it.tagName === "VIDEO" && it.classList.contains('video-stream') && it.classList.contains('html5-main-video')) {
                 this.href = document.URL;
                 this._id = document.URL.split(base)[1];
+                this.isValid = true;
+                return this;
             }
             else
                 return null;
