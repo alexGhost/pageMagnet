@@ -224,6 +224,13 @@ var BMContent;
     function dualDecode(x) {
         return decodeURIComponent(decodeHTML(x));
     }
+    function closestElement(source, tagName) {
+        if (source.tagName == tagName)
+            return source;
+        if (source.parentElement == null)
+            return null;
+        return closestElement(source.parentElement, tagName);
+    }
     /*************************************************************************************************** */
     /**************************** Image ************************* */
     var Image = /** @class */ (function (_super) {
@@ -579,32 +586,41 @@ var BMContent;
         __extends(YoutubeVideo, _super);
         function YoutubeVideo() {
             var _this = _super.call(this) || this;
+            //private constants
+            _this.base = "https://www.youtube.com/watch?v=";
+            _this.embed = "https://www.youtube.com/embed/";
             _this.bmtype = "YoutubeVideo";
             return _this;
         }
         //parseCore(it: HTMLAnchorElement): CatchResult {
         YoutubeVideo.prototype.parseCore = function (it) {
-            var base = "https://www.youtube.com/watch?v=";
-            if (it.tagName === "A" && it.href.lastIndexOf(base) === 0) {
+            if (it.tagName === "A" && it.href.lastIndexOf(this.base) === 0) {
                 this.href = it.href;
-                this._id = it.href.split(base)[1];
+                this._id = it.href.split(this.base)[1];
                 this.isValid = true;
                 //let toRet = new CatchedYoutubeVideo(this);
                 //return toRet;
                 return this;
             }
-            else if (document.URL.lastIndexOf(base) === 0 && it.tagName === "VIDEO" && it.classList.contains('video-stream') && it.classList.contains('html5-main-video')) {
+            if (document.URL.lastIndexOf(this.base) === 0 && it.tagName === "VIDEO" && it.classList.contains('video-stream') && it.classList.contains('html5-main-video')) {
                 this.href = document.URL;
-                this._id = document.URL.split(base)[1];
+                this._id = document.URL.split(this.base)[1];
                 this.isValid = true;
                 return this;
             }
-            else
-                return null;
+            var iframe = closestElement(it, "IFRAME");
+            if (iframe !== null && iframe.src.lastIndexOf(this.embed) === 0) {
+                var src = it.src;
+                this.href = src;
+                this._id = src.split(this.embed)[1];
+                this.isValid = true;
+                return this;
+            }
+            return null;
         };
         YoutubeVideo.prototype.renderCore = function () {
             var toRet = document.createElement("iframe");
-            toRet.src = "https://www.youtube.com/embed/" + this._id;
+            toRet.src = this.embed + this._id;
             toRet.width = "560";
             toRet.height = "315";
             toRet.style.maxWidth = '100%';
@@ -627,6 +643,7 @@ var BMContent;
     //}
     /********************************************************** */
 })(BMContent || (BMContent = {}));
+
 
 
 
