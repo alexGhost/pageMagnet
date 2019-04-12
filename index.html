@@ -642,7 +642,70 @@ var BMContent;
     //    }
     //}
     /********************************************************** */
+    /**************************** WebPage ************************* */
+    var WebPage = /** @class */ (function (_super) {
+        __extends(WebPage, _super);
+        function WebPage() {
+            var _this = _super.call(this) || this;
+            _this.bmtype = "WebPage";
+            return _this;
+        }
+        WebPage.prototype.parseCore = function (it) {
+            this.siteIconUrl = null;
+            var _icon = document.querySelector("link[rel='shortcut icon']");
+            if (_icon !== null) {
+                this.siteIconUrl = _icon.getAttribute("href");
+            }
+            if (this.siteIconUrl === null)
+                this.siteIconUrl = document.location.hostname + "/favicon.ico";
+            this.siteFriendlyName = "";
+            var _fnMeta = document.querySelector("meta[property='og:site_name']");
+            if (_fnMeta != null)
+                this.siteFriendlyName = _fnMeta.getAttribute("content");
+            this.imageUrl = null;
+            var _imageMeta = document.querySelector("meta[property='og:image']") || document.querySelector("meta[property='twitter:image']");
+            if (_imageMeta !== null)
+                this.imageUrl = _imageMeta.getAttribute("content");
+            this.title = null;
+            var _titleMeta = document.querySelector("meta[property='og:title']") || document.querySelector("meta[property='twitter:title']");
+            if (_titleMeta !== null)
+                this.title = _titleMeta.getAttribute("content");
+            this.description = "";
+            var _descriptionMeta = document.querySelector("meta[property='og:description']") || document.querySelector("meta[property='twitter:description']");
+            if (_descriptionMeta !== null)
+                this.description = _descriptionMeta.getAttribute("content");
+            this.url = null;
+            var _url = document.querySelector("link[rel='canonical']");
+            if (_url !== null)
+                this.url = _url.getAttribute("href");
+            else {
+                _url = document.querySelector("meta[property='og:url']") || document.querySelector("meta[property='twitter:url']");
+                if (_url !== null)
+                    this.url = _url.getAttribute("content");
+            }
+            if (this.title !== null && this.url != null) {
+                this.isValid = true;
+                return this;
+            }
+            return null;
+        };
+        WebPage.prototype.renderCore = function () {
+            var toRet = document.createElement("div");
+            toRet.setAttribute("style", "display:inline-block;max-width:350px;border:1px lightblue solid;border-radius:17px");
+            var siteIconImage = this.siteIconUrl ? "<image src=\"" + this.siteIconUrl + "\" style=\"border-top-left-radius:17px\"></image>" : "";
+            var image = this.imageUrl ? "<image src=\"" + this.imageUrl + "\" style=\"max-width:350px\" width=\"100%\"></image>" : "";
+            var innerHtml = "\n                <a style=\"text-decoration:none\" href=\"" + this.url + "\">\n                    <div style=\"background-color:lightblue;color:white;text-align:left;border-top-left-radius:17px;border-top-right-radius:17px;display:table;width:100%\">\n                        " + siteIconImage + "&nbsp;&nbsp;<span style=\"display:table-cell;vertical-align:middle\">" + this.siteFriendlyName + "</span>\n                    </div>\n                    <div>\n                        <div>" + image + "</div>\n                        <div style=\"padding:10px\">\n                            <h3>" + this.title + "</h3>\n                            <h4 style=\"text-align:left;font-weight:500\">" + this.description + "\u201D</h4>\n                        </div>\n                    </div>\n             </a>\n                ";
+            toRet.innerHTML = innerHtml;
+            return toRet;
+        };
+        return WebPage;
+    }(Content));
+    BMContent.WebPage = WebPage;
+    //Registering the content type
+    BMContent.ContentTypes["WebPage"] = WebPage;
+    /********************************************************** */
 })(BMContent || (BMContent = {}));
+
 
 
 
