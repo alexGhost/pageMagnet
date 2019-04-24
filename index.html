@@ -40,6 +40,11 @@
       <div id="myAudioCtn">
       </div>
     </div>
+    <div>
+      <div><label>WebPage</label></div>
+      <div id="myWebPageCtn">
+      </div>
+    </div>
     <br/>
     <br/>
     <img id="myImg" src="https://www.21co.com/~/media/Images/3 List View Images/21C-MedSpecialties-Thumb-492x320.ashx?mw=430" />
@@ -137,6 +142,14 @@
           Object.assign(link, info.catchedItem);
           linkCtn.innerHTML = "";
           linkCtn.appendChild(link.render());
+        }
+       else
+        if (info.catchedItem.bmtype === "WebPage"){
+          var webPageCtn = document.getElementById("myWebPageCtn");
+          var webPage = new BMContent.WebPage();
+          Object.assign(webPage, info.catchedItem);
+          webPageCtn.innerHTML = "";
+          webPageCtn.appendChild(webPage.render());
         }
      });
      $(document).ready(function () {
